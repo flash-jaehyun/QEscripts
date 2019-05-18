@@ -1,0 +1,7 @@
+cif*.sh
+supercell*
+surface*
+StructGen.org
+vasp_read_struct.py
+xsf2pwi.sh
+cryst_trans.py
