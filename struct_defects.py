@@ -80,7 +80,7 @@ def bias_polaron(struc,site,maxr,bias=1.01):
    # get nearest neighbors
    psite=struc.sites[site-1] # zero-indexing in python
    nn = struc.get_neighbors(psite,maxr,include_index=True)
-   bias_struct = struc
+   bias_struct = struc.copy()
 
    print(psite.specie,site,psite.frac_coords)
 
@@ -99,11 +99,14 @@ def bias_polaron(struc,site,maxr,bias=1.01):
    # return new structure
    return bias_struct
  
-def vacancy(struc,sites):
+def vacancy(structure,sites):
    """ wrapper for making vacancies 
  
        struc (Pymatgen structure)
        sites (list of integers): sites to remove """
+   # copy structure and leave original unmodified
+   struc = structure.copy()
+
 
 
    sites = np.subtract(sites,1) # zero-indexing
@@ -112,12 +115,15 @@ def vacancy(struc,sites):
    return struc
 
 
-def substitute(struc,sites,species):
+def substitute(structure,sites,species):
    """ wrapper for making substitutional defects
  
        struc (Pymatgen structure)
        sites (list of integers): sites to replace 
        species (list of strings): species of sites """
+   # copy structure and leave original unmodified
+   struc = structure.copy()
+
 
    sites = np.subtract(sites,1) # zero-indexing
    assert len(sites) == len(species)
@@ -129,7 +135,7 @@ def substitute(struc,sites,species):
   
    return struc
 
-def translate(struc,sites,vec_trans):
+def translate(structure,sites,vec_trans):
    """ translate site by vec_trans
 
        hackneyed attempt to make the structure more "corner sharing"
@@ -140,6 +146,9 @@ def translate(struc,sites,vec_trans):
        sites (list of integers)
 
    """
+   # copy structure and leave original unmodified
+   struc = structure.copy()
+
    for site in sites:
  
      specie = struc.sites[site].specie
@@ -150,7 +159,7 @@ def translate(struc,sites,vec_trans):
 
    return struc 
 
-def translate_to(struc,site,targetsite,shift=0.15):
+def translate_to(structure,site,targetsite,shift=0.15):
    """ translate site by to targetsite by multiplicative amount shift
 
        hackneyed attempt to make the structure more "corner sharing"
@@ -158,6 +167,9 @@ def translate_to(struc,site,targetsite,shift=0.15):
        sites, targetsite (list of integers, integer): corresponding to site
 
    """
+   # copy structure and leave original unmodified
+   struc = structure.copy()
+
  
    site = site - 1  # zero-indexing
    targetsite = targetsite - 1
@@ -183,7 +195,7 @@ def translate_nn(struc,site,maxr,target,shift=0.3):
 
        yet another attempt to stabilize polaron"""
 
-   newstruc = struc
+   newstruc = struc.copy()
 
    newstruc = translate_to(newstruc,site,target,shift)
 
@@ -206,7 +218,7 @@ def translate_nn_rigid(struc,site,maxr,target,shift=0.3):
 
        yet another attempt to stabilize polaron"""
 
-   newstruc = struc
+   newstruc = struc.copy()
    site = site - 1
    target = target - 1
  
@@ -225,7 +237,7 @@ def translate_nn_rigid(struc,site,maxr,target,shift=0.3):
 
    return newstruc
 
-def rotate(struc,sites,angle):
+def rotate(structure,sites,angle):
    """ Rotate site1 and site2 about average point by angle 
           in xy-plane 
   
@@ -233,6 +245,9 @@ def rotate(struc,sites,angle):
        angle (degrees)        
 
        yet another attempt to stabilize polaron"""
+
+   # copy structure and leave original unmodified
+   struc = structure.copy()
 
    # at the current moment, only need rotation within xy-plane
    R = lambda ang: np.asmatrix([[np.cos(ang),-np.sin(ang), 0],[np.sin(ang),np.cos(ang),0],[0,0,1]])
