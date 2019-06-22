@@ -53,6 +53,43 @@ def struct_import(filname,to_pymatgen=True):
 
    return structure
 
+
+def struct2ase(struct):
+   """ convert pymatgen structure to ASE structure """
+   from pymatgen.io.ase import AseAtomsAdaptor
+   structure = AseAtomsAdaptor.get_structure(struct)
+   return structure
+
+def struct2pmg(struct):
+   """ convert ASE structure to pymatgen structure 
+       this is not natively implemented in ASE
+   """
+   from ase.io import write
+   from pymatgen.io.cif import CifParser # this didn't give supercell structure
+   from pymatgen.io.vasp import Poscar
+   write("POSCAR.tmp",struct,format="vasp")
+  
+   # fix formatting of the outputted vasp format, which has misplaced species labels
+   # this is a hacky way to insert it in the right line
+   f = open("POSCAR.tmp","r")
+   lines = []
+   for i,line in enumerate(f):
+      if i == 0:
+        species_line = line
+      elif i == 5:
+        lines.append(species_line)
+      lines.append(line)
+   f.close()
+   with open("POSCAR",'w') as f:
+     f.writelines(lines)  
+
+
+   poscar = Poscar.from_file("POSCAR")
+   structure = poscar.structure
+   subprocess.call(["rm", "POSCAR","POSCAR.tmp"])
+
+   return structure   
+
 def struct_import_xcrys(filname,ubin=""):
    """ import structure from QE input/output into Pymatgen structure
        essentially creates intermediary file *.xsf that both programs can parse
