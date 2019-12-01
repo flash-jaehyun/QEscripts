@@ -10,7 +10,7 @@ Scripts for easing intermediate and plotting workflow involving QE:
     1) statistics on structure
         histogram of bond length, bond angle, polyhedra statistics, e.g., 
         
-        ![](./example-bond-histrogram.png)
+        ![](./example-bond-histogram.png)
         
     2) introducing point defects and impuritie
    
