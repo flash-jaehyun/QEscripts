@@ -6,4 +6,7 @@ Dependencies: [ase](https://wiki.fysik.dtu.dk/ase/index.html]), [pymatgen](https
 
 Scripts for easing intermediate and plotting workflow involving QE:
  - struct: scripts for manipulating and analyzing QE-input structures
-    - e.g., plotting histogram of bond length, bond angle, polyhedra statistics
+ - importing QE input and output files for structure manipulation in ase and pymatgen
+    1) statistics on structure
+        histogram of bond length, bond angle, polyhedra statistics
+    2) introducing point defects and impuritie
