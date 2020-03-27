@@ -78,7 +78,7 @@ def hist_plot(distributions,title,legend,xlim=[0,10],xlab="",ylab="Counts (arb. 
    ax.set_xlabel(xlab)
    ax.set_ylabel(ylab)
    ax.set_xlim(xlim)
-   plt.savefig(savefile)
+   plt.savefig(savefile,bbox_inches="tight")
    plt.show()
    
 #------------------------------- Structure difference -------------------------------#

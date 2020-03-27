@@ -137,3 +137,11 @@ def id_surf_atoms(struc,spec1,n=2,is_symm_cell=True):
              surfatoms_ind.append(icat)
     return surfatoms, surfatoms_ind
  
+def get_dist(P1,P2):
+    """ get distance between two points
+        P1, P2 (tuple): (x,y)
+    """
+    x1,y1 = P1
+    x2,y2 = P2 
+
+    return math.sqrt(math.pow((x1-x2),2) + math.pow((y1-y2),2)) 

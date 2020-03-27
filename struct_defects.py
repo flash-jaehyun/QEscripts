@@ -175,8 +175,8 @@ def translate_to(structure,site,targetsite,shift=0.15):
    targetsite = targetsite - 1
 
    specie = struc.sites[site].specie
-   atom = struc.sites[site].frac_coords
-   target = struc.sites[targetsite].frac_coords
+   atom = np.mod(struc.sites[site].frac_coords,1) # periodic boundary conditions
+   target = np.mod(struc.sites[targetsite].frac_coords,1)
    vec_trans = np.multiply(np.subtract(target,atom),shift)
 
    newcoord = np.add(atom,vec_trans)

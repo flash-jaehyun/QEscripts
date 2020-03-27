@@ -54,13 +54,25 @@ def struct_import(filname,to_pymatgen=True):
    return structure
 
 
-def struct2ase(struct):
-   """ convert pymatgen structure to ASE structure """
+def struct2pmg(struct):
+   """ convert ASE structure to pymatgen structure """
    from pymatgen.io.ase import AseAtomsAdaptor
    structure = AseAtomsAdaptor.get_structure(struct)
    return structure
 
-def struct2pmg(struct):
+def struct2ase(struct):
+   """ convert pymatgen sructure to ASE structure """
+   from ase.io import read
+   from pymatgen.io.cif import CifWriter
+
+   w = CifWriter(struct)
+   w.write_file("temp.cif")
+   
+   structure = read("temp.cif",format="cif")
+   subprocess.call(["rm", "temp.cif"])
+   return structure
+
+def hacky_struct2pmg(struct):
    """ convert ASE structure to pymatgen structure 
        this is not natively implemented in ASE
    """

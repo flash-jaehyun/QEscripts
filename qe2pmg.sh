@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# created: wwwennie
 # wrapper for converting QE -> XSF -> pymatgen
 # pymatgen (2018.8.7)  is unable to handle element symbols, only atomic numbers
 # this is the wrapper for mapping to element symbols to atomic numbers
