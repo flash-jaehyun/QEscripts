@@ -374,7 +374,7 @@ def plot_bs_dos(allkpts,kptpath,bands,pdosfiles,xtics=[],labels=[],
     index=index+1
    
  
-  ax[1].legend(pdoslegend,loc=(1.04,0.0))
+  ax[1].legend(pdoslegend,loc=(1.04,0.0),fontsize=12)
   ax[1].set_xlim(doslim[0],doslim[1])
   ax[1].set_ylim(yrange[0],yrange[1])
   ax[1].tick_params(axis="x",labelsize=20)
