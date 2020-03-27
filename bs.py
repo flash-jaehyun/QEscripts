@@ -22,9 +22,11 @@ bs.plot_bs(allkpts,kptpath,bands,xtics=tics,labels=label,yrange=[0,15],vbi=103)
 ----------------------------------------------
 """
 
+from dos import * # see dos.py; added to PYTHONPATH
 from matplotlib.ticker import MultipleLocator
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 import numpy as np
 import csv
 
@@ -230,9 +232,9 @@ def plot_bs(allkpts,kptpath,bands,xtics=[],labels=[],yrange=[-50,50],eshift=0.0,
   bndnum = 0
   for band in bands:
      if bndnum <= vbi:
-       ax.plot(kptpath,band,'navy')
+       ax.plot(kptpath,band+eshift,'navy')
      else:
-       ax.plot(kptpath,band,'orange')
+       ax.plot(kptpath,band+eshift,'orange')
      bndnum = bndnum + 1
 
   # add vertical lines
@@ -259,3 +261,124 @@ def plot_bs(allkpts,kptpath,bands,xtics=[],labels=[],yrange=[-50,50],eshift=0.0,
   ax.set_ylabel("Energy (eV)",fontsize=20)
   plt.show()
   
+
+def plot_bs_dos(allkpts,kptpath,bands,pdosfiles,xtics=[],labels=[],
+                yrange=[-50,50],eshift=0.0,vbi=1e4,
+                doslim=[-10,10],pdoslegend='',nspin=1,scale=1.0,dos=True,dosfile='',lsmooth=False):
+  """ Plot the bandstructure with some formatting and dos as subfigures
+      essentially modified version of combining dos.py and bs.py plotting routines
+    
+      allkpts (list): list containing all kpt coord
+      kptpath (list): list containing kptpath distances
+      bands (list): list of lists containing bands
+      xtics (list): containing tics and high-symmetry k-point labels
+      eshift (float): amount to shift bands by, e.g., E_fermi
+      yrange (list): contains [ymin ymax] to plot between
+      vbi (integer): band index of topmost valence band
+
+      pdosfiles (array): strings of pdos filenames to plot
+      dos (bool): whether to plot total density of states
+      lsmooth (bool): whether to add smoothing to computed dos
+  """
+  sns.set_style("ticks")
+
+  fig,ax = plt.subplots(1,2, figsize=(10,5),gridspec_kw={'width_ratios': [3, 1]})
+
+  # plot bands
+  bndnum = 0
+  for band in bands:
+     if bndnum <= vbi:
+       ax[0].plot(kptpath,band+eshift,'navy')
+     else:
+       ax[0].plot(kptpath,band+eshift,'orange')
+     bndnum = bndnum + 1
+
+  # add vertical lines
+  for i in np.arange(len(xtics)):
+     ax[0].axvline(x=xtics[i],color='black',linewidth=0.5)
+
+  # format bs plot
+  ax[0].set_xticks(xtics)
+  ax[0].set_xticklabels(labels,fontsize=20)
+  ax[0].tick_params(labelsize=20)
+  ax[0].set_xlim(0-0.001,max(xtics)+0.001)
+  ax[0].set_ylim(yrange)
+
+  ml = MultipleLocator(10)
+  ax[0].yaxis.set_minor_locator(ml)
+  ax[0].set_ylabel("Energy (eV)",fontsize=20)
+
+  # plot dos
+  # plot total DOS first, if desired
+  if dos:   
+    # import data
+    if (nspin==1):
+      key = ['energy','dos','intdos']
+    elif (nspin==2):
+      key = ['energy','dosup','dosdown','intdos']
+  
+    data = pd.read_csv(dosfile,delim_whitespace=True,header=1,names=key,dtype=np.float32)
+    energy = np.add(data['energy'],eshift)
+    win_len = 11
+  
+    # plot
+    numdat = len(energy)
+    if (nspin == 1):
+       if lsmooth:
+          dos = smooth(data['dos'],window_len=win_len)[:numdat]
+       else:
+          dos = data['dos']
+       ax[1].plot(dos,energy,'k')
+     
+    if (nspin == 2):
+       if lsmooth:
+           dosup = smooth(data['dosup'],window_len=win_len+100)[:numdat]
+           dosdown = smooth(data['dosdown'],window_len=win_len+100)[:numdat]
+           print("Smoothing Total Dos",win_len+30)
+       else:
+           dosup = data['dosup']
+           dosdown = data['dosdown']
+       ax[1].plot(dosup,energy,'k')
+       ax[1].plot(np.multiply(-1.0,dosdown),energy,'k')
+
+  # import data
+  if (nspin==1):
+    key = ['energy','pdos']
+  elif (nspin==2):
+    key = ['energy','pdosup','pdosdown']
+
+  # plot partial density of states
+  index=0
+  for fil in pdosfiles:
+    data = pd.read_csv(fil,delim_whitespace=True,header=1,names=key,dtype=np.float32)
+    energy = np.add(data['energy'], eshift)
+    numdat = len(energy)
+    color = color_picker(index)
+    if (nspin == 1):
+        if lsmooth:
+           pdos = smooth(data['pdos'],window_len=win_len)[:numdat]
+        else:
+           pdos = data['pdos']
+        ax[1].plot(pdos,energy,color)
+    
+    if (nspin == 2):     
+        if lsmooth:
+           pdosup = smooth(data['pdosup'],window_len=win_len)[:numdat]
+           pdosdown = smooth(data['pdosdown'],window_len=win_len)[:numdat]
+        else:
+           pdosup = data['pdosup']
+           pdosdown = data['pdosdown']
+          
+        ax[1].plot(pdosup,energy,color)
+        ax[1].plot(np.multiply(-1.0,pdosdown),energy,color)
+    index=index+1
+   
+ 
+  ax[1].legend(pdoslegend,loc=(1.04,0.0))
+  ax[1].set_xlim(doslim[0],doslim[1])
+  ax[1].set_ylim(yrange[0],yrange[1])
+  ax[1].tick_params(axis="x",labelsize=20)
+  ax[1].set_yticklabels([])
+  ax[1].set_xlabel("DOS (per u.c.)",fontsize=20)
+  
+  plt.show()

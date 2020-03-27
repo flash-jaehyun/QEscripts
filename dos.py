@@ -29,7 +29,8 @@ def color_picker(index):
   """ For when more control over colors is preferred 
       Cycles over the possible options """
  # colors= ["blue","orange","green","magenta","darkcyan","cornflowerblue","r","indigo","goldenrod","navy"]
-  colors= ["darkmagenta","fuchsia","darkcyan","orange","firebrick","cornflowerblue","indigo","goldenrod","red","green"]
+ # colors= ["darkmagenta","fuchsia","darkcyan","orange","firebrick","cornflowerblue","indigo","goldenrod","red","green"]
+  colors= ["fuchsia","darkmagenta","darkcyan","orange","green","cornflowerblue","darkred","goldenrod","indigo","firebrick"]
   index = np.mod(index,len(colors))
   return colors[index]
 
